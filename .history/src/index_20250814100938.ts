@@ -371,7 +371,7 @@ async function runServer() {
     // Forward the POSTed JSON-RPC message to the transport
     // (passing req.body is recommended)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    transport.handlePostMessage(req, res);
+    transport.handlePostMessage(req, res, req.body);
   });
 
   // Listen on your desired port

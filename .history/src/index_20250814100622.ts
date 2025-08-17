@@ -337,14 +337,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
-/*async function runServer() {
+async function runServer() {
   const transport = new SSEServerTransport({ port: 3001 });
   await server.connect(transport);
   console.error("Salesforce MCP Server running on stdio");
   console.error("Salesforce MCP Server running at http://localhost:3001/sse");
-}*/
+}
 
-
+/*
 async function runServer() {
   const app = express();
   app.use(express.json());
@@ -371,7 +371,7 @@ async function runServer() {
     // Forward the POSTed JSON-RPC message to the transport
     // (passing req.body is recommended)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    transport.handlePostMessage(req, res);
+    transport.handlePostMessage(req, res, req.body);
   });
 
   // Listen on your desired port
@@ -380,7 +380,7 @@ async function runServer() {
     console.error(`Salesforce MCP Server running at http://localhost:${PORT}/sse`);
   });
 }
-
+*/
 runServer().catch((error) => {
   console.error("Fatal error running server:", error);
   process.exit(1);

@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import express from "express";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -337,48 +335,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
-/*async function runServer() {
-  const transport = new SSEServerTransport({ port: 3001 });
+async function runServer() {
+  const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("Salesforce MCP Server running on stdio");
-  console.error("Salesforce MCP Server running at http://localhost:3001/sse");
-}*/
-
-
-async function runServer() {
-  const app = express();
-  app.use(express.json());
-
-  let transport: SSEServerTransport | null = null;
-
-  // 1) Client opens SSE stream here:
- app.get("/sse", (req, res) => {
-    // Second arg MUST be the ServerResponse object
-    transport = new SSEServerTransport("/messages", res);
-    // Connect your existing MCP server instance to this transport
-    // (You already have `server` created elsewhere in your code.)
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    server.connect(transport);
-    console.error("Salesforce MCP Server: SSE stream opened");
-  });
-
-  // 2) Client sends JSON-RPC messages here:
-  app.post("/messages", (req, res) => {
-    if (!transport) {
-      res.status(503).send("SSE transport not initialized yet");
-      return;
-    }
-    // Forward the POSTed JSON-RPC message to the transport
-    // (passing req.body is recommended)
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    transport.handlePostMessage(req, res);
-  });
-
-  // Listen on your desired port
-  const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
-  app.listen(PORT, () => {
-    console.error(`Salesforce MCP Server running at http://localhost:${PORT}/sse`);
-  });
 }
 
 runServer().catch((error) => {
